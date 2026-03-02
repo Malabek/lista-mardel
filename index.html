@@ -709,7 +709,7 @@ function renderMapMarkers() {
       '<h4>'+(p.visited?'✅ ':'')+esc(p.name)+'</h4>'+
       '<p>'+(typeIcons[p.type]||'📍')+' '+p.type+(p.addedBy?' · agregado por '+p.addedBy:'')+'</p>'+
       '<div class="place-popup-btns">'+
-      '<button class="btn-visit" onclick="toggleVisited(\''+id+'\','+p.visited+')">'+(p.visited?'Desmarcar':'✅ Visitado')+'</button>'+
+      '<button class="btn-visit" onclick="toggleVisited(\''+id+'\','+p.visited+')" style="background:'+(p.visited?'rgba(255,100,100,0.2)':'rgba(76,175,80,0.2)')+';color:'+(p.visited?'#e8635a':'#7ed98a')+';border:1px solid '+(p.visited?'rgba(232,99,90,0.3)':'rgba(76,175,80,0.3)')+'!important">'+(p.visited?'❌ Desmarcar':'✅ Visitado')+'</button>'+
       '<button class="btn-del-place" onclick="deletePlace(\''+id+'\')">🗑 Borrar</button>'+
       '</div></div>'
     );
