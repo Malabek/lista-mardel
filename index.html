@@ -756,29 +756,27 @@ function handleTicketPhoto(event) {
 
 function runOCR(base64) {
   document.getElementById('ocr-status').innerHTML = '<span class="spinner"></span> Detectando importe...';
-  fetch('https://api.anthropic.com/v1/messages', {
+  fetch('https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBdE-lVznp36Y0oDG6QuxP2qv_VkChj3Xs', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 100,
-      messages: [{
-        role: 'user',
-        content: [{
-          type: 'image',
-          source: { type: 'base64', media_type: 'image/jpeg', data: base64 }
-        }, {
-          type: 'text',
-          text: 'Este es un ticket o factura. Respondé SOLO con el importe total en números, sin símbolo de moneda ni texto extra. Solo el número. Si no podés detectarlo, respondé 0.'
-        }]
+      requests: [{
+        image: { content: base64 },
+        features: [{ type: 'TEXT_DETECTION', maxResults: 1 }]
       }]
     })
   })
   .then(function(r){ return r.json(); })
   .then(function(d) {
-    var text = d.content && d.content[0] ? d.content[0].text.trim() : '0';
-    var amount = parseFloat(text.replace(/[^0-9.,]/g,'').replace(',','.'));
-    if (amount && amount > 0) {
+    var text = d.responses && d.responses[0] && d.responses[0].fullTextAnnotation
+      ? d.responses[0].fullTextAnnotation.text : '';
+    // Buscar el importe más alto en el texto (el total)
+    var numbers = text.match(/\$?\s*[\d.,]+/g) || [];
+    var amounts = numbers.map(function(n) {
+      return parseFloat(n.replace(/[^0-9.,]/g,'').replace(',','.'));
+    }).filter(function(n){ return n > 0; });
+    var amount = amounts.length ? Math.max.apply(null, amounts) : 0;
+    if (amount > 0) {
       document.getElementById('gasto-monto').value = amount;
       document.getElementById('ocr-status').textContent = '✅ Importe detectado: $' + amount;
     } else {
