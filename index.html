@@ -247,10 +247,7 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
   <header>
     <div>
       <div class="header-title">🌊 Mar del Plata</div>
-      <div style="display:flex;align-items:center;gap:8px">
-  <div class="you-badge" id="you-badge"></div>
-  <button onclick="cerrarSesion()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:3px 10px;color:rgba(245,230,200,0.45);font-family:'DM Sans',sans-serif;font-size:0.68rem;cursor:pointer;">Salir</button>
-</div>
+      <div class="you-badge" id="you-badge"></div>
     </div>
     <div class="presence-pill" id="presence-pill">
       <div class="dot"></div>
@@ -888,14 +885,7 @@ function updateChatBadge() {
   if (unreadCount>0) { b.textContent=unreadCount; b.classList.add('show'); }
   else { b.classList.remove('show'); }
 }
-function cerrarSesion() {
-  if (currentUser) {
-    db.ref('presence/' + currentUser).set({ online: false, ts: firebase.database.ServerValue.TIMESTAMP });
-  }
-  currentUser = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-}
+
 function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
