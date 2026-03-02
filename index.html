@@ -307,30 +307,12 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
       <button onclick="addPlace()">+ Agregar</button>
     </div>
     <div class="map-type-row">
-      <div class="map-type-wrap">
-        <button class="map-type-btn active" id="mbtn-todos" onclick="toggleDropdown(event,'dd-todos','todos')">Todos ▾</button>
-        <div class="map-dropdown" id="dd-todos"></div>
-      </div>
-      <div class="map-type-wrap">
-        <button class="map-type-btn" id="mbtn-playa" onclick="toggleDropdown(event,'dd-playa','playa')">🏖 Playas ▾</button>
-        <div class="map-dropdown" id="dd-playa"></div>
-      </div>
-      <div class="map-type-wrap">
-        <button class="map-type-btn" id="mbtn-restaurant" onclick="toggleDropdown(event,'dd-restaurant','restaurant')">🍽 Restós ▾</button>
-        <div class="map-dropdown" id="dd-restaurant"></div>
-      </div>
-      <div class="map-type-wrap">
-        <button class="map-type-btn" id="mbtn-bar" onclick="toggleDropdown(event,'dd-bar','bar')">🍺 Bares ▾</button>
-        <div class="map-dropdown" id="dd-bar"></div>
-      </div>
-      <div class="map-type-wrap">
-        <button class="map-type-btn" id="mbtn-paseo" onclick="toggleDropdown(event,'dd-paseo','paseo')">🚶 Paseos ▾</button>
-        <div class="map-dropdown" id="dd-paseo"></div>
-      </div>
-      <div class="map-type-wrap">
-        <button class="map-type-btn" id="mbtn-visitado" onclick="toggleDropdown(event,'dd-visitado','visitado')">✅ Visitados ▾</button>
-        <div class="map-dropdown" id="dd-visitado"></div>
-      </div>
+      <button class="map-type-btn active" id="mbtn-todos" onclick="toggleDropdown(event,'todos')">Todos ▾</button>
+      <button class="map-type-btn" id="mbtn-playa" onclick="toggleDropdown(event,'playa')">🏖 Playas ▾</button>
+      <button class="map-type-btn" id="mbtn-restaurant" onclick="toggleDropdown(event,'restaurant')">🍽 Restós ▾</button>
+      <button class="map-type-btn" id="mbtn-bar" onclick="toggleDropdown(event,'bar')">🍺 Bares ▾</button>
+      <button class="map-type-btn" id="mbtn-paseo" onclick="toggleDropdown(event,'paseo')">🚶 Paseos ▾</button>
+      <button class="map-type-btn" id="mbtn-visitado" onclick="toggleDropdown(event,'visitado')">✅ Visitados ▾</button>
     </div>
     <div id="leaflet-map"></div>
   </div>
@@ -742,26 +724,30 @@ function deletePlace(id) {
   if (mapInstance) mapInstance.closePopup();
 }
 
-function toggleDropdown(e, ddId, type) {
+function toggleDropdown(e, type) {
   e.stopPropagation();
-  var dd = document.getElementById(ddId);
-  var isOpen = dd.classList.contains('open');
+  var dd = document.getElementById('map-global-dropdown');
+  var isOpen = dd.style.display === 'block' && dd.getAttribute('data-type') === type;
   closeAllDropdowns();
   document.querySelectorAll('.map-type-btn').forEach(function(b) { b.classList.remove('active'); });
   currentMapFilter = type;
   renderMapMarkers();
   e.currentTarget.classList.add('active');
   if (!isOpen) {
+    dd.setAttribute('data-type', type);
     populateDropdown(dd, type);
     var rect = e.currentTarget.getBoundingClientRect();
+    var left = rect.left;
+    if (left + 200 > window.innerWidth) left = window.innerWidth - 205;
     dd.style.top = (rect.bottom + 6) + 'px';
-    dd.style.left = rect.left + 'px';
-    dd.classList.add('open');
+    dd.style.left = left + 'px';
+    dd.style.display = 'block';
   }
 }
 
 function closeAllDropdowns() {
-  document.querySelectorAll('.map-dropdown').forEach(function(d) { d.classList.remove('open'); });
+  var dd = document.getElementById('map-global-dropdown');
+  if (dd) dd.style.display = 'none';
 }
 
 function populateDropdown(dd, type) {
@@ -772,7 +758,6 @@ function populateDropdown(dd, type) {
     if (type === 'visitado') return p.visited;
     return p.type === type;
   }).sort(function(a,b) { return (a[1].name||'').localeCompare(b[1].name||''); });
-
   if (!arr.length) {
     dd.innerHTML = '<div class="map-dd-empty">No hay lugares todavía</div>';
     return;
@@ -960,5 +945,7 @@ function updateChatBadge() {
 
 function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
+<!-- GLOBAL MAP DROPDOWN -->
+<div id="map-global-dropdown" style="display:none;position:fixed;background:#0d2235;border:1px solid rgba(255,255,255,0.15);border-radius:12px;min-width:190px;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,0.9);max-height:260px;overflow-y:auto;"></div>
 </body>
 </html>
