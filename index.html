@@ -114,7 +114,7 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
 .map-type-wrap { position: relative; flex-shrink: 0; }
 .map-type-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(245,230,200,0.42); font-family: 'DM Sans', sans-serif; font-size: 0.72rem; cursor: pointer; white-space: nowrap; -webkit-appearance: none; }
 .map-type-btn.active { background: rgba(46,125,168,0.22); border-color: var(--wave); color: #7ec8e3; }
-.map-dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; background: #0d2235; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; min-width: 190px; z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.6); max-height: 260px; overflow-y: auto; }
+.map-dropdown { display: none; position: fixed; background: #0d2235; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; min-width: 190px; z-index: 9999; box-shadow: 0 8px 32px rgba(0,0,0,0.8); max-height: 260px; overflow-y: auto; }
 .map-dropdown.open { display: block; }
 .map-dd-item { padding: 10px 14px; font-size: 0.82rem; color: var(--sand); cursor: pointer; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .map-dd-item:last-child { border-bottom: none; }
@@ -752,6 +752,9 @@ function toggleDropdown(e, ddId, type) {
   e.currentTarget.classList.add('active');
   if (!isOpen) {
     populateDropdown(dd, type);
+    var rect = e.currentTarget.getBoundingClientRect();
+    dd.style.top = (rect.bottom + 6) + 'px';
+    dd.style.left = rect.left + 'px';
     dd.classList.add('open');
   }
 }
