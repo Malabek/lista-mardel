@@ -57,6 +57,19 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
 .w-details { font-size: 0.68rem; color: rgba(245,230,200,0.35); margin-top: 3px; }
 .w-city { font-size: 0.7rem; color: rgba(245,230,200,0.4); text-align: right; }
 #weather-widget.loading { opacity: 0.5; }
+#weather-widget { cursor: pointer; transition: all 0.2s; }
+#weather-widget:active { opacity: 0.8; transform: scale(0.98); }
+#forecast-panel { display: none; margin: 8px 16px 0; background: var(--glass); border: 1px solid var(--glass-b); border-radius: 14px; overflow: hidden; }
+#forecast-panel.open { display: block; }
+.forecast-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(245,230,200,0.35); padding: 10px 14px 6px; }
+.forecast-row { display: flex; align-items: center; padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.05); gap: 10px; }
+.forecast-day { font-size: 0.75rem; color: rgba(245,230,200,0.55); width: 36px; flex-shrink: 0; }
+.forecast-icon { font-size: 1.2rem; width: 28px; text-align: center; flex-shrink: 0; }
+.forecast-desc { flex: 1; font-size: 0.72rem; color: rgba(245,230,200,0.45); text-transform: capitalize; }
+.forecast-temps { font-size: 0.78rem; font-family: 'Playfair Display', serif; white-space: nowrap; }
+.forecast-temps .hi { color: var(--sun); }
+.forecast-temps .lo { color: rgba(245,230,200,0.35); margin-left: 4px; }
+.forecast-rain { font-size: 0.68rem; color: #7ec8e3; margin-left: 6px; white-space: nowrap; }
 
 /* TABS */
 .tabs { display: flex; gap: 5px; padding: 12px 16px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -249,14 +262,19 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
     </div>
   </header>
 
-  <div id="weather-widget" class="loading">
+  <div id="weather-widget" class="loading" onclick="toggleForecast()">
     <div class="w-icon" id="w-icon">⏳</div>
     <div class="w-info">
       <div class="w-temp" id="w-temp">--°</div>
       <div class="w-desc" id="w-desc">Cargando...</div>
       <div class="w-details" id="w-details"></div>
     </div>
-    <div class="w-city">Mar del Plata 🌊</div>
+    <div class="w-city">Mar del Plata 🌊<div style="font-size:0.6rem;color:rgba(245,230,200,0.3);margin-top:4px;text-align:right">tocá para pronóstico ▾</div></div>
+  </div>
+
+  <div id="forecast-panel">
+    <div class="forecast-title">🗓 Pronóstico extendido</div>
+    <div id="forecast-rows"></div>
   </div>
 
   <div class="tabs" id="main-tabs">
@@ -463,6 +481,62 @@ function loadWeather() {
       document.getElementById('w-icon').textContent = '🌡️';
       document.getElementById('w-temp').textContent = '--°';
       document.getElementById('w-desc').textContent = 'Sin conexión';
+    });
+}
+
+function toggleForecast() {
+  var panel = document.getElementById('forecast-panel');
+  var isOpen = panel.classList.contains('open');
+  if (isOpen) {
+    panel.classList.remove('open');
+  } else {
+    panel.classList.add('open');
+    if (!panel.dataset.loaded) {
+      loadForecast();
+      panel.dataset.loaded = '1';
+    }
+  }
+}
+
+function loadForecast() {
+  var container = document.getElementById('forecast-rows');
+  container.innerHTML = '<div style="padding:12px 14px;font-size:0.78rem;color:rgba(245,230,200,0.3)">Cargando...</div>';
+  fetch('https://api.openweathermap.org/data/2.5/forecast?q=Mar+del+Plata,AR&appid=' + WEATHER_KEY + '&units=metric&lang=es&cnt=40')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var icons = {'01d':'☀️','01n':'🌙','02d':'⛅','02n':'⛅','03d':'☁️','03n':'☁️','04d':'☁️','04n':'☁️','09d':'🌧️','09n':'🌧️','10d':'🌦️','10n':'🌧️','11d':'⛈️','11n':'⛈️','13d':'❄️','13n':'❄️','50d':'🌫️','50n':'🌫️'};
+      var days = {};
+      var dayNames = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+      d.list.forEach(function(item) {
+        var date = new Date(item.dt * 1000);
+        var key = date.toDateString();
+        if (!days[key]) days[key] = { date: date, temps: [], icons: [], descs: [], rain: 0 };
+        days[key].temps.push(item.main.temp);
+        days[key].icons.push(item.weather[0].icon);
+        days[key].descs.push(item.weather[0].description);
+        if (item.rain && item.rain['3h']) days[key].rain += item.rain['3h'];
+        if (item.pop) days[key].pop = Math.max(days[key].pop || 0, item.pop);
+      });
+      var keys = Object.keys(days).slice(0, 6);
+      container.innerHTML = keys.map(function(key, i) {
+        var day = days[key];
+        var hi = Math.round(Math.max.apply(null, day.temps));
+        var lo = Math.round(Math.min.apply(null, day.temps));
+        var icon = icons[day.icons[Math.floor(day.icons.length/2)]] || '🌡️';
+        var desc = day.descs[Math.floor(day.descs.length/2)];
+        var dayLabel = i === 0 ? 'Hoy' : (i === 1 ? 'Mañ' : dayNames[day.date.getDay()]);
+        var rainStr = day.pop ? ' 💧' + Math.round(day.pop*100) + '%' : '';
+        return '<div class="forecast-row">' +
+          '<span class="forecast-day">' + dayLabel + '</span>' +
+          '<span class="forecast-icon">' + icon + '</span>' +
+          '<span class="forecast-desc">' + desc + '</span>' +
+          '<span class="forecast-temps"><span class="hi">' + hi + '°</span><span class="lo">' + lo + '°</span></span>' +
+          '<span class="forecast-rain">' + rainStr + '</span>' +
+          '</div>';
+      }).join('');
+    })
+    .catch(function() {
+      document.getElementById('forecast-rows').innerHTML = '<div style="padding:12px 14px;font-size:0.78rem;color:rgba(245,230,200,0.3)">No se pudo cargar el pronóstico</div>';
     });
 }
 
