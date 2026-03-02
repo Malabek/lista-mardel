@@ -495,7 +495,7 @@ function doLogin(user) {
     var pill = document.getElementById('presence-pill');
     var txt = document.getElementById('presence-text');
     if (d && d.online) { pill.className = 'presence-pill online'; txt.textContent = other + ' en línea 🟢'; }
-    else { pill.className = 'presence-pill'; txt.textContent = other + ' desconectada'; }
+    else { pill.className = 'presence-pill'; txt.textContent = other + ' desconectada 🔴'; }
   });
 
   db.ref('typing/' + other).on('value', function(snap) {
