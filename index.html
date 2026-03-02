@@ -209,6 +209,10 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
 .msg.theirs .msg-bubble { background: rgba(232,99,90,0.14); border: 1px solid rgba(232,99,90,0.22); border-bottom-left-radius: 5px; }
 .msg-meta { font-size: 0.62rem; color: rgba(245,230,200,0.28); margin-top: 3px; padding: 0 4px; }
 .msg.mine .msg-meta { text-align: right; }
+.msg-status { font-size: 0.7rem; margin-left: 3px; }
+.msg-status.sent { color: rgba(245,230,200,0.3); }
+.msg-status.delivered { color: rgba(245,230,200,0.5); }
+.msg-status.read { color: #4fc3f7; }
 .typing-indicator { font-size: 0.72rem; color: rgba(245,230,200,0.28); padding: 6px 16px 4px; min-height: 24px; font-style: italic; }
 .chat-input-area { display: flex; gap: 8px; padding: 10px 14px 12px; background: rgba(10,28,46,0.97); border-top: 1px solid var(--glass-b); }
 .chat-input-area input { flex: 1; background: var(--glass); border: 1px solid var(--glass-b); border-radius: 24px; padding: 10px 15px; color: var(--sand); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; -webkit-appearance: none; }
@@ -235,16 +239,16 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
 </div>
 
 <div id="login-screen">
-  <div class="login-title">🌊 Mar del Plata '26</div>
-  <div class="login-sub">Bahía / Mardel 🦭</div>
+  <div class="login-title">🌊 Mar del Plata</div>
+  <div class="login-sub">Bahía Blanca → la costa 🌅</div>
   <div class="login-label">¿Quién sos?</div>
   <div class="user-cards">
     <div class="user-card tomi" onclick="doLogin('Tomi')">
-      <div class="av">👨🏽‍🦱</div>
+      <div class="av">🧑‍🦱</div>
       <div class="nm" style="color:var(--tomi)">Tomi</div>
     </div>
     <div class="user-card ara" onclick="doLogin('Ara')">
-      <div class="av">👩🏽</div>
+      <div class="av">👩‍🦱</div>
       <div class="nm" style="color:var(--ara)">Ara</div>
     </div>
   </div>
@@ -269,7 +273,7 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
       <div class="w-desc" id="w-desc">Cargando...</div>
       <div class="w-details" id="w-details"></div>
     </div>
-    <div class="w-city">Mar del Plata 🏖️<div style="font-size:0.6rem;color:rgba(245,230,200,0.3);margin-top:4px;text-align:right">tocá para pronóstico ▾</div></div>
+    <div class="w-city">Mar del Plata 🌊<div style="font-size:0.6rem;color:rgba(245,230,200,0.3);margin-top:4px;text-align:right">tocá para pronóstico ▾</div></div>
   </div>
 
   <div id="forecast-panel">
@@ -279,14 +283,14 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
 
   <div class="tabs" id="main-tabs">
     <button class="tab active" id="tab-btn-personal" onclick="switchTab('personal')"><span class="ti">🎒</span>Personal</button>
-    <button class="tab" id="tab-btn-bahia" onclick="switchTab('bahia')"><span class="ti">🏠</span>Llevamos de Bahía</button>
-    <button class="tab" id="tab-btn-mdp" onclick="switchTab('mdp')"><span class="ti">🛒</span>Compramos en Mardel</button>
+    <button class="tab" id="tab-btn-bahia" onclick="switchTab('bahia')"><span class="ti">🏠</span>De Bahía</button>
+    <button class="tab" id="tab-btn-mdp" onclick="switchTab('mdp')"><span class="ti">🛒</span>Comprar</button>
   </div>
 
   <div id="tab-personal" class="section active">
     <div class="who-row">
       <span>Para:</span>
-      <button class="who-btn active" data-who="Los 2" onclick="setWho('Los 2')">Los 2 💕</button>
+      <button class="who-btn active" data-who="Los 2" onclick="setWho('Los 2')">Los 2</button>
       <button class="who-btn" data-who="Tomi" onclick="setWho('Tomi')">Tomi</button>
       <button class="who-btn" data-who="Ara" onclick="setWho('Ara')">Ara</button>
     </div>
@@ -327,8 +331,8 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
     <div class="map-type-row">
       <button class="map-type-btn active" id="mbtn-todos" onclick="toggleDropdown(event,'todos')">Todos ▾</button>
       <button class="map-type-btn" id="mbtn-playa" onclick="toggleDropdown(event,'playa')">🏖 Playas ▾</button>
-      <button class="map-type-btn" id="mbtn-restaurant" onclick="toggleDropdown(event,'restaurant')">🍽 Restaurantes ▾</button>
-      <button class="map-type-btn" id="mbtn-bar" onclick="toggleDropdown(event,'bar')">🍺 Barcitos ▾</button>
+      <button class="map-type-btn" id="mbtn-restaurant" onclick="toggleDropdown(event,'restaurant')">🍽 Restós ▾</button>
+      <button class="map-type-btn" id="mbtn-bar" onclick="toggleDropdown(event,'bar')">🍺 Bares ▾</button>
       <button class="map-type-btn" id="mbtn-paseo" onclick="toggleDropdown(event,'paseo')">🚶 Paseos ▾</button>
       <button class="map-type-btn" id="mbtn-visitado" onclick="toggleDropdown(event,'visitado')">✅ Visitados ▾</button>
     </div>
@@ -341,8 +345,8 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
       <div class="gasto-form-title">Nuevo gasto</div>
       <div class="gasto-type-row">
         <button class="gasto-type-btn active" data-gtype="compartido" onclick="setGastoType('compartido')">👫 Compartido</button>
-        <button class="gasto-type-btn" data-gtype="Tomi" onclick="setGastoType('Tomi')">👨🏽‍🦱 Tomi</button>
-        <button class="gasto-type-btn" data-gtype="Ara" onclick="setGastoType('Ara')">👩🏽 Ara</button>
+        <button class="gasto-type-btn" data-gtype="Tomi" onclick="setGastoType('Tomi')">🧑‍🦱 Tomi</button>
+        <button class="gasto-type-btn" data-gtype="Ara" onclick="setGastoType('Ara')">👩‍🦱 Ara</button>
       </div>
       <div class="gasto-inputs">
         <input id="gasto-desc" type="text" placeholder="Descripción (ej: almuerzo)" onkeypress="if(event.key==='Enter')document.getElementById('gasto-monto').focus()">
@@ -562,7 +566,7 @@ function doLogin(user) {
       txt.textContent = other + ' en línea 🟢';
     } else {
       pill.className = 'presence-pill';
-      txt.textContent = other + ' desconectado 🔴';
+      txt.textContent = other + ' desconectada 🔴';
     }
   });
 
@@ -701,7 +705,7 @@ function renderList(tab) {
       if (!groups[g]) groups[g] = [];
       groups[g].push(pair);
     });
-    var labels = {'Los 2':'👫 Para los dos','Tomi':'👨🏽‍🦱 Tomi','Ara':'👩🏽 Ara'};
+    var labels = {'Los 2':'👫 Para los dos','Tomi':'🧑‍🦱 Tomi','Ara':'👩‍🦱 Ara'};
     container.innerHTML = '';
     ['Los 2','Tomi','Ara'].forEach(function(grp) {
       if (!groups[grp] || !groups[grp].length) return;
@@ -978,6 +982,36 @@ function openLightbox(src) {
 }
 function closeLightbox() { document.getElementById('lightbox').classList.remove('show'); }
 
+// ── SOUNDS ──
+function playSound(type) {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    if (type === 'send') {
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.start(); osc.stop(ctx.currentTime + 0.12);
+    } else if (type === 'receive') {
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.setValueAtTime(800, ctx.currentTime + 0.07);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.start(); osc.stop(ctx.currentTime + 0.18);
+    } else if (type === 'read') {
+      osc.frequency.setValueAtTime(1000, ctx.currentTime);
+      osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.start(); osc.stop(ctx.currentTime + 0.1);
+    }
+  } catch(e) {}
+}
+
 function onTyping() {
   if (!currentUser) return;
   db.ref('typing/'+currentUser).set({typing:true});
@@ -991,20 +1025,65 @@ function sendMessage() {
   if (!text || !currentUser) return;
   inp.value = '';
   db.ref('typing/'+currentUser).set({typing:false});
-  db.ref('messages').push({ from: currentUser, text: text, ts: Date.now() });
+  var msgKey = db.ref('messages').push().key;
+  db.ref('messages/'+msgKey).set({ from: currentUser, text: text, ts: Date.now(), status: 'sent' });
+  playSound('send');
 }
+
+var lastMsgCount = 0;
+var lastReadTs = {};
 
 function renderMessages() {
   var container = document.getElementById('chat-messages');
   var arr = Object.entries(messages).sort(function(a,b) { return a[1].ts-b[1].ts; });
   if (!arr.length) { container.innerHTML = '<div class="empty"><span class="empty-icon">💬</span>Empezá la conversación</div>'; return; }
+
+  // Mark incoming messages as delivered/read
+  var other = currentUser === 'Tomi' ? 'Ara' : 'Tomi';
+  var updates = {};
+  arr.forEach(function(pair) {
+    var key = pair[0], m = pair[1];
+    if (m.from !== currentUser) {
+      if (inChat && m.status !== 'read') {
+        updates['messages/'+key+'/status'] = 'read';
+      } else if (!inChat && m.status === 'sent') {
+        updates['messages/'+key+'/status'] = 'delivered';
+      }
+    }
+  });
+  if (Object.keys(updates).length) db.ref().update(updates);
+
+  // Sound for new incoming messages
+  var newCount = arr.length;
+  if (newCount > lastMsgCount && lastMsgCount > 0) {
+    var newest = arr[arr.length-1][1];
+    if (newest.from !== currentUser) playSound('receive');
+  }
+  // Sound for read receipts on own messages
+  if (lastMsgCount > 0) {
+    arr.forEach(function(pair) {
+      var m = pair[1];
+      if (m.from === currentUser && m.status === 'read' && !lastReadTs[pair[0]]) {
+        lastReadTs[pair[0]] = true;
+        playSound('read');
+      }
+    });
+  }
+  lastMsgCount = newCount;
+
   container.innerHTML = arr.map(function(pair) {
     var m = pair[1], mine = m.from === currentUser;
     var d = new Date(m.ts);
     var time = d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    var statusIcon = '';
+    if (mine) {
+      if (m.status === 'read') statusIcon = '<span class="msg-status read">✓✓</span>';
+      else if (m.status === 'delivered') statusIcon = '<span class="msg-status delivered">✓✓</span>';
+      else statusIcon = '<span class="msg-status sent">✓</span>';
+    }
     return '<div class="msg '+(mine?'mine':'theirs')+'">' +
       '<div class="msg-bubble">'+esc(m.text)+'</div>' +
-      '<div class="msg-meta">'+(mine?'':m.from+' · ')+time+'</div></div>';
+      '<div class="msg-meta">'+(mine?'':m.from+' · ')+time+statusIcon+'</div></div>';
   }).join('');
   if (inChat) scrollChat();
 }
