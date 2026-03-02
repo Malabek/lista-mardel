@@ -888,7 +888,14 @@ function updateChatBadge() {
   if (unreadCount>0) { b.textContent=unreadCount; b.classList.add('show'); }
   else { b.classList.remove('show'); }
 }
-
+function cerrarSesion() {
+  if (currentUser) {
+    db.ref('presence/' + currentUser).set({ online: false, ts: firebase.database.ServerValue.TIMESTAMP });
+  }
+  currentUser = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
 function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
