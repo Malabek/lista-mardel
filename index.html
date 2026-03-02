@@ -9,6 +9,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root {
   --sand: #f5e6c8; --wave: #2e7da8; --sun: #f4a923; --coral: #e8635a;
@@ -830,41 +831,26 @@ function handleTicketPhoto(event) {
 }
 
 function runOCR(base64) {
-  document.getElementById('ocr-status').innerHTML = '<span class="spinner"></span> Detectando importe...';
-  fetch('https://vision.googleapis.com/v1/images:annotate?key=' + VISION_KEY, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      requests: [{ image: { content: base64 }, features: [{ type: 'TEXT_DETECTION', maxResults: 1 }] }]
+  document.getElementById('ocr-status').innerHTML = '<span class="spinner"></span> Leyendo ticket...';
+  var imageData = 'data:image/jpeg;base64,' + base64;
+  Tesseract.recognize(imageData, 'spa+eng', {})
+    .then(function(result) {
+      var text = result.data.text || '';
+      var numbers = text.match(/[\d.,]+/g) || [];
+      var amounts = numbers.map(function(n) {
+        return parseFloat(n.replace(/\./g,'').replace(',','.'));
+      }).filter(function(n) { return n > 10 && n < 9999999; });
+      var amount = amounts.length ? Math.max.apply(null, amounts) : 0;
+      if (amount > 0) {
+        document.getElementById('gasto-monto').value = amount;
+        document.getElementById('ocr-status').textContent = '✅ Importe detectado: $' + amount;
+      } else {
+        document.getElementById('ocr-status').textContent = '⚠️ No pude detectar el importe, ingresalo a mano';
+      }
     })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (d.error) {
-      document.getElementById('ocr-status').textContent = '⚠️ Error API: ' + d.error.message;
-      return;
-    }
-    if (d.responses && d.responses[0] && d.responses[0].error) {
-      document.getElementById('ocr-status').textContent = '⚠️ Error: ' + d.responses[0].error.message;
-      return;
-    }
-    var text = (d.responses && d.responses[0] && d.responses[0].fullTextAnnotation) ? d.responses[0].fullTextAnnotation.text : '';
-    if (!text) { document.getElementById('ocr-status').textContent = '⚠️ No se detectó texto en la imagen'; return; }
-    var numbers = text.match(/\$?\s*[\d.,]+/g) || [];
-    var amounts = numbers.map(function(n) {
-      return parseFloat(n.replace(/[^0-9.,]/g,'').replace(',','.'));
-    }).filter(function(n) { return n > 0 && n < 9999999; });
-    var amount = amounts.length ? Math.max.apply(null, amounts) : 0;
-    if (amount > 0) {
-      document.getElementById('gasto-monto').value = amount;
-      document.getElementById('ocr-status').textContent = '✅ Importe detectado: $' + amount;
-    } else {
-      document.getElementById('ocr-status').textContent = '⚠️ Texto detectado pero no encontré importe. Ingresalo a mano';
-    }
-  })
-  .catch(function(err) {
-    document.getElementById('ocr-status').textContent = '⚠️ Error de conexión. Ingresalo a mano';
-  });
+    .catch(function() {
+      document.getElementById('ocr-status').textContent = '⚠️ Error al leer el ticket, ingresalo a mano';
+    });
 }
 
 function agregarGasto() {
