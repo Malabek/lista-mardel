@@ -247,13 +247,10 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
   <header>
     <div>
       <div class="header-title" onclick="cerrarSesion()" style="cursor:pointer;">🌊 Mar del Plata</div>
-```
 
-Y verificá que tengas la función `cerrarSesion` en el JS. Buscá con Ctrl+F:
-```
-function cerrarSesion
-      <div class="you-badge" id="you-badge"></div>
-    </div>
+<div style="display:flex;align-items:center;gap:8px">
+  <div class="you-badge" id="you-badge"></div>
+</div>
     <div class="presence-pill" id="presence-pill">
       <div class="dot"></div>
       <span id="presence-text">Conectando...</span>
@@ -899,7 +896,14 @@ function updateChatBadge() {
   if (unreadCount>0) { b.textContent=unreadCount; b.classList.add('show'); }
   else { b.classList.remove('show'); }
 }
-
+function cerrarSesion() {
+  if (currentUser) {
+    db.ref('presence/' + currentUser).set({ online: false, ts: firebase.database.ServerValue.TIMESTAMP });
+  }
+  currentUser = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
 function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
