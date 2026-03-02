@@ -332,37 +332,6 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
   <!-- GASTOS -->
   <div id="gastos-section" class="section">
     <div class="section-title">💰 Gastos del viaje</div>
-    <div class="total-card" style="background:var(--glass);border:1px solid var(--glass-b);border-radius:12px;padding:14px;text-align:center;margin-bottom:10px;">
-  <div class="tc-label" style="font-size:0.65rem;color:rgba(245,230,200,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Total gastado</div>
-  <div class="tc-amount" id="total-general" style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--sand);">$0</div>
-</div>
-<div class="gasto-totals">
-  <div class="total-card shared">
-    <div class="tc-label">Compartido</div>
-    <div class="tc-amount" id="total-compartido">$0</div>
-  </div>
-  <div class="total-card tomi-card">
-    <div class="tc-label">Tomi</div>
-    <div class="tc-amount" id="total-tomi">$0</div>
-  </div>
-  <div class="total-card ara-card">
-    <div class="tc-label">Ara</div>
-    <div class="tc-amount" id="total-ara">$0</div>
-  </div>
-</div>
-      <div class="total-card shared">
-        <div class="tc-label">Compartido</div>
-        <div class="tc-amount" id="total-compartido">$0</div>
-      </div>
-      <div class="total-card tomi-card">
-        <div class="tc-label">Tomi</div>
-        <div class="tc-amount" id="total-tomi">$0</div>
-      </div>
-      <div class="total-card ara-card">
-        <div class="tc-label">Ara</div>
-        <div class="tc-amount" id="total-ara">$0</div>
-      </div>
-    </div>
 
     <div class="gasto-form">
       <div class="gasto-form-title">Nuevo gasto</div>
@@ -385,6 +354,25 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
     </div>
 
     <div id="gastos-list"></div>
+
+    <div class="gasto-totals" style="margin-top:16px;">
+      <div class="total-card shared">
+        <div class="tc-label">Compartido</div>
+        <div class="tc-amount" id="total-compartido">$0</div>
+      </div>
+      <div class="total-card tomi-card">
+        <div class="tc-label">Tomi</div>
+        <div class="tc-amount" id="total-tomi">$0</div>
+      </div>
+      <div class="total-card ara-card">
+        <div class="tc-label">Ara</div>
+        <div class="tc-amount" id="total-ara">$0</div>
+      </div>
+    </div>
+    <div class="total-card" style="margin-top:8px;margin-bottom:20px;background:var(--glass);border:1px solid var(--glass-b);border-radius:12px;padding:14px;text-align:center;">
+      <div class="tc-label" style="font-size:0.65rem;color:rgba(245,230,200,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Total gastado</div>
+      <div id="total-general" style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--sand);">$0</div>
+    </div>
   </div>
 
   <!-- CHAT -->
@@ -403,7 +391,8 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
 
 <!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <button class="nav-btn active" id="nav-map" onclick="switchTab('map')"><span class="ni">🗺️</span>Mapa</button>
+  <button class="nav-btn active" id="nav-listas" onclick="switchTab('personal')"><span class="ni">📋</span>Listas</button>
+  <button class="nav-btn" id="nav-map" onclick="switchTab('map')"><span class="ni">🗺️</span>Mapa</button>
   <button class="nav-btn" id="nav-gastos" onclick="switchTab('gastos')"><span class="ni">💰</span>Gastos</button>
   <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">
     <span class="ni">💬</span>Chat
@@ -509,7 +498,7 @@ function doLogin(user) {
     var pill = document.getElementById('presence-pill');
     var txt = document.getElementById('presence-text');
     if (d && d.online) { pill.className = 'presence-pill online'; txt.textContent = other + ' en línea 🟢'; }
-    else { pill.className = 'presence-pill'; txt.textContent = other + ' desconectado 🔴'; }
+    else { pill.className = 'presence-pill'; txt.textContent = other + ' desconectada'; }
   });
 
   db.ref('typing/' + other).on('value', function(snap) {
@@ -566,11 +555,15 @@ function switchTab(tab) {
     if (btn) btn.classList.toggle('active', t === tab);
   });
 
-  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
-  ['personal','bahia','mdp','map','gastos','chat'].forEach(function(t) {
+  // Update bottom nav - listas button active when on any list tab
+  var navListas = document.getElementById('nav-listas');
+  if (navListas) navListas.classList.toggle('active', isListTab);
+  ['map','gastos','chat'].forEach(function(t) {
     var nb = document.getElementById('nav-' + t);
     if (nb) nb.classList.toggle('active', t === tab);
   });
+
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
 
   if (tab === 'chat') {
     document.getElementById('chat-section').classList.add('active');
@@ -765,7 +758,7 @@ function runOCR(base64) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
-      model: 'claude-opus-4-5',
+      model: 'claude-sonnet-4-6',
       max_tokens: 100,
       messages: [{
         role: 'user',
@@ -825,6 +818,8 @@ function renderGastos() {
     else if (g.type === 'Tomi') totalTomi += g.monto;
     else if (g.type === 'Ara') totalAra += g.monto;
   });
+  var totalGeneral = totalComp + totalTomi + totalAra;
+  document.getElementById('total-general').textContent = '$' + fmtMoney(totalGeneral);
   document.getElementById('total-compartido').textContent = '$' + fmtMoney(totalComp);
   document.getElementById('total-tomi').textContent = '$' + fmtMoney(totalTomi + totalComp/2);
   document.getElementById('total-ara').textContent = '$' + fmtMoney(totalAra + totalComp/2);
