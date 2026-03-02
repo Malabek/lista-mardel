@@ -807,11 +807,24 @@ function handleTicketPhoto(event) {
   if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
-    var base64 = e.target.result;
-    document.getElementById('foto-preview').src = base64;
-    document.getElementById('foto-preview').style.display = 'block';
-    ticketPhotoBase64 = base64.split(',')[1];
-    runOCR(ticketPhotoBase64);
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxSize = 1024;
+      var w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', 0.8);
+      document.getElementById('foto-preview').src = compressed;
+      document.getElementById('foto-preview').style.display = 'block';
+      ticketPhotoBase64 = compressed.split(',')[1];
+      runOCR(ticketPhotoBase64);
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -827,7 +840,16 @@ function runOCR(base64) {
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
+    if (d.error) {
+      document.getElementById('ocr-status').textContent = '⚠️ Error API: ' + d.error.message;
+      return;
+    }
+    if (d.responses && d.responses[0] && d.responses[0].error) {
+      document.getElementById('ocr-status').textContent = '⚠️ Error: ' + d.responses[0].error.message;
+      return;
+    }
     var text = (d.responses && d.responses[0] && d.responses[0].fullTextAnnotation) ? d.responses[0].fullTextAnnotation.text : '';
+    if (!text) { document.getElementById('ocr-status').textContent = '⚠️ No se detectó texto en la imagen'; return; }
     var numbers = text.match(/\$?\s*[\d.,]+/g) || [];
     var amounts = numbers.map(function(n) {
       return parseFloat(n.replace(/[^0-9.,]/g,'').replace(',','.'));
@@ -837,11 +859,11 @@ function runOCR(base64) {
       document.getElementById('gasto-monto').value = amount;
       document.getElementById('ocr-status').textContent = '✅ Importe detectado: $' + amount;
     } else {
-      document.getElementById('ocr-status').textContent = '⚠️ No pude detectar el importe, ingresalo a mano';
+      document.getElementById('ocr-status').textContent = '⚠️ Texto detectado pero no encontré importe. Ingresalo a mano';
     }
   })
-  .catch(function() {
-    document.getElementById('ocr-status').textContent = '⚠️ Error al leer el ticket, ingresalo a mano';
+  .catch(function(err) {
+    document.getElementById('ocr-status').textContent = '⚠️ Error de conexión. Ingresalo a mano';
   });
 }
 
