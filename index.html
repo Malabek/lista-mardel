@@ -332,7 +332,24 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
   <!-- GASTOS -->
   <div id="gastos-section" class="section">
     <div class="section-title">💰 Gastos del viaje</div>
-    <div class="gasto-totals">
+    <div class="total-card" style="background:var(--glass);border:1px solid var(--glass-b);border-radius:12px;padding:14px;text-align:center;margin-bottom:10px;">
+  <div class="tc-label" style="font-size:0.65rem;color:rgba(245,230,200,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Total gastado</div>
+  <div class="tc-amount" id="total-general" style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--sand);">$0</div>
+</div>
+<div class="gasto-totals">
+  <div class="total-card shared">
+    <div class="tc-label">Compartido</div>
+    <div class="tc-amount" id="total-compartido">$0</div>
+  </div>
+  <div class="total-card tomi-card">
+    <div class="tc-label">Tomi</div>
+    <div class="tc-amount" id="total-tomi">$0</div>
+  </div>
+  <div class="total-card ara-card">
+    <div class="tc-label">Ara</div>
+    <div class="tc-amount" id="total-ara">$0</div>
+  </div>
+</div>
       <div class="total-card shared">
         <div class="tc-label">Compartido</div>
         <div class="tc-amount" id="total-compartido">$0</div>
