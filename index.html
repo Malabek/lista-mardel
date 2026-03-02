@@ -117,6 +117,24 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
 .map-type-row::-webkit-scrollbar { display: none; }
 .map-type-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(245,230,200,0.42); font-family: 'DM Sans', sans-serif; font-size: 0.72rem; cursor: pointer; white-space: nowrap; -webkit-appearance: none; flex-shrink: 0; }
 .map-type-btn.active { background: rgba(46,125,168,0.22); border-color: var(--wave); color: #7ec8e3; }
+.map-type-wrap { position: relative; flex-shrink: 0; }
+.map-dropdown {
+  display: none; position: absolute; top: calc(100% + 6px); left: 0;
+  background: #0d2235; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px; min-width: 180px; z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); overflow: hidden;
+  max-height: 260px; overflow-y: auto;
+}
+.map-dropdown.open { display: block; }
+.map-dropdown-item {
+  padding: 10px 14px; font-size: 0.82rem; color: var(--sand);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: background 0.15s; border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.map-dropdown-item:last-child { border-bottom: none; }
+.map-dropdown-item:active { background: rgba(46,125,168,0.2); }
+.map-dropdown-item.visited { opacity: 0.5; }
+.map-dropdown-empty { padding: 14px; font-size: 0.78rem; color: rgba(245,230,200,0.3); text-align: center; }
 .leaflet-popup-content-wrapper { background: #0d2235 !important; border: 1px solid rgba(255,255,255,0.12) !important; color: var(--sand) !important; border-radius: 12px !important; }
 .leaflet-popup-tip { background: #0d2235 !important; }
 .place-popup { padding: 4px; }
@@ -247,10 +265,8 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
   <header>
     <div>
       <div class="header-title" onclick="cerrarSesion()" style="cursor:pointer;">🌊 Mar del Plata</div>
-
-<div style="display:flex;align-items:center;gap:8px">
-  <div class="you-badge" id="you-badge"></div>
-</div>
+      <div class="you-badge" id="you-badge"></div>
+    </div>
     <div class="presence-pill" id="presence-pill">
       <div class="dot"></div>
       <span id="presence-text">Conectando...</span>
@@ -321,12 +337,30 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
       <button onclick="addPlace()">+ Agregar</button>
     </div>
     <div class="map-type-row" id="map-type-row">
-      <button class="map-type-btn active" data-mtype="todos" onclick="filterMap('todos')">Todos</button>
-      <button class="map-type-btn" data-mtype="playa" onclick="filterMap('playa')">🏖 Playas</button>
-      <button class="map-type-btn" data-mtype="restaurant" onclick="filterMap('restaurant')">🍽 Restós</button>
-      <button class="map-type-btn" data-mtype="bar" onclick="filterMap('bar')">🍺 Bares</button>
-      <button class="map-type-btn" data-mtype="paseo" onclick="filterMap('paseo')">🚶 Paseos</button>
-      <button class="map-type-btn" data-mtype="visitado" onclick="filterMap('visitado')">✅ Visitados</button>
+      <div class="map-type-wrap">
+        <button class="map-type-btn active" data-mtype="todos" onclick="toggleDropdown(event,'dd-todos')">Todos ▾</button>
+        <div class="map-dropdown" id="dd-todos"></div>
+      </div>
+      <div class="map-type-wrap">
+        <button class="map-type-btn" data-mtype="playa" onclick="toggleDropdown(event,'dd-playa')">🏖 Playas ▾</button>
+        <div class="map-dropdown" id="dd-playa"></div>
+      </div>
+      <div class="map-type-wrap">
+        <button class="map-type-btn" data-mtype="restaurant" onclick="toggleDropdown(event,'dd-restaurant')">🍽 Restós ▾</button>
+        <div class="map-dropdown" id="dd-restaurant"></div>
+      </div>
+      <div class="map-type-wrap">
+        <button class="map-type-btn" data-mtype="bar" onclick="toggleDropdown(event,'dd-bar')">🍺 Bares ▾</button>
+        <div class="map-dropdown" id="dd-bar"></div>
+      </div>
+      <div class="map-type-wrap">
+        <button class="map-type-btn" data-mtype="paseo" onclick="toggleDropdown(event,'dd-paseo')">🚶 Paseos ▾</button>
+        <div class="map-dropdown" id="dd-paseo"></div>
+      </div>
+      <div class="map-type-wrap">
+        <button class="map-type-btn" data-mtype="visitado" onclick="toggleDropdown(event,'dd-visitado')">✅ Visitados ▾</button>
+        <div class="map-dropdown" id="dd-visitado"></div>
+      </div>
     </div>
     <div id="leaflet-map"></div>
   </div>
@@ -709,7 +743,7 @@ function renderMapMarkers() {
       '<h4>'+(p.visited?'✅ ':'')+esc(p.name)+'</h4>'+
       '<p>'+(typeIcons[p.type]||'📍')+' '+p.type+(p.addedBy?' · agregado por '+p.addedBy:'')+'</p>'+
       '<div class="place-popup-btns">'+
-      '<button class="btn-visit" onclick="toggleVisited(\''+id+'\','+p.visited+')" style="background:'+(p.visited?'rgba(255,100,100,0.2)':'rgba(76,175,80,0.2)')+';color:'+(p.visited?'#e8635a':'#7ed98a')+';border:1px solid '+(p.visited?'rgba(232,99,90,0.3)':'rgba(76,175,80,0.3)')+'!important">'+(p.visited?'❌ Desmarcar':'✅ Visitado')+'</button>'+
+      '<button class="btn-visit" onclick="toggleVisited(\''+id+'\','+p.visited+')">'+(p.visited?'Desmarcar':'✅ Visitado')+'</button>'+
       '<button class="btn-del-place" onclick="deletePlace(\''+id+'\')">🗑 Borrar</button>'+
       '</div></div>'
     );
@@ -720,6 +754,7 @@ function renderMapMarkers() {
 function toggleVisited(id, current) {
   db.ref('places/'+id).update({ visited: !current });
   if (mapInstance) mapInstance.closePopup();
+  closeAllDropdowns();
 }
 
 function deletePlace(id) {
@@ -731,7 +766,63 @@ function filterMap(type) {
   currentMapFilter = type;
   document.querySelectorAll('.map-type-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-mtype')===type); });
   renderMapMarkers();
+  closeAllDropdowns();
 }
+
+function toggleDropdown(e, ddId) {
+  e.stopPropagation();
+  var dd = document.getElementById(ddId);
+  var isOpen = dd.classList.contains('open');
+  closeAllDropdowns();
+  if (!isOpen) {
+    // Get type from ddId
+    var type = ddId.replace('dd-','');
+    filterMap(type);
+    populateDropdown(ddId, type);
+    dd.classList.add('open');
+  }
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.map-dropdown').forEach(function(d){ d.classList.remove('open'); });
+}
+
+function populateDropdown(ddId, type) {
+  var dd = document.getElementById(ddId);
+  var typeIcons = { playa:'🏖', restaurant:'🍽', bar:'🍺', paseo:'🚶' };
+  var arr = Object.entries(places).filter(function(pair) {
+    var p = pair[1];
+    if (type === 'todos') return true;
+    if (type === 'visitado') return p.visited;
+    return p.type === type;
+  }).sort(function(a,b){ return (a[1].ts||0)-(b[1].ts||0); });
+
+  if (!arr.length) {
+    dd.innerHTML = '<div class="map-dropdown-empty">No hay lugares en esta categoría</div>';
+    return;
+  }
+
+  dd.innerHTML = arr.map(function(pair) {
+    var id = pair[0], p = pair[1];
+    var icon = p.visited ? '✅' : (typeIcons[p.type] || '📍');
+    return '<div class="map-dropdown-item '+(p.visited?'visited':'')+'" onclick="flyToPlace('+p.lat+','+p.lng+',''+id+'')">'+
+      '<span>'+icon+'</span>'+
+      '<span>'+esc(p.name)+'</span>'+
+      '</div>';
+  }).join('');
+}
+
+function flyToPlace(lat, lng, id) {
+  closeAllDropdowns();
+  if (mapInstance) {
+    mapInstance.setView([lat, lng], 16, { animate: true });
+    var marker = mapMarkers[id];
+    if (marker) setTimeout(function(){ marker.openPopup(); }, 400);
+  }
+}
+
+// Close dropdowns when tapping outside
+document.addEventListener('click', function() { closeAllDropdowns(); });
 
 // ── GASTOS ──
 function setGastoType(type) {
@@ -770,11 +861,10 @@ function runOCR(base64) {
   .then(function(d) {
     var text = d.responses && d.responses[0] && d.responses[0].fullTextAnnotation
       ? d.responses[0].fullTextAnnotation.text : '';
-    // Buscar el importe más alto en el texto (el total)
     var numbers = text.match(/\$?\s*[\d.,]+/g) || [];
     var amounts = numbers.map(function(n) {
       return parseFloat(n.replace(/[^0-9.,]/g,'').replace(',','.'));
-    }).filter(function(n){ return n > 0; });
+    }).filter(function(n){ return n > 0 && n < 9999999; });
     var amount = amounts.length ? Math.max.apply(null, amounts) : 0;
     if (amount > 0) {
       document.getElementById('gasto-monto').value = amount;
@@ -894,14 +984,17 @@ function updateChatBadge() {
   if (unreadCount>0) { b.textContent=unreadCount; b.classList.add('show'); }
   else { b.classList.remove('show'); }
 }
+
 function cerrarSesion() {
   if (currentUser) {
-    db.ref('presence/' + currentUser).set({ online: false, ts: firebase.database.ServerValue.TIMESTAMP });
+    db.ref("presence/" + currentUser).set({ online: false, ts: firebase.database.ServerValue.TIMESTAMP });
   }
   currentUser = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById("app").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+  if (mapInstance) { mapInstance.remove(); mapInstance = null; }
 }
+
 function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
