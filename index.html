@@ -955,7 +955,7 @@ function renderGastos() {
     var id = pair[0], g = pair[1];
     var cls = g.type === 'compartido' ? 'compartido' : g.type.toLowerCase();
     var tagCls = g.type === 'compartido' ? 'tag-compartido' : (g.type === 'Tomi' ? 'tag-tomi' : 'tag-ara');
-    var tagLabel = g.type === 'compartido' ? '👫 Compartido' : (g.type === 'Tomi' ? '👨🏽‍🦱 Tomi' : '👩🏽 Ara');
+    var tagLabel = g.type === 'compartido' ? '👫 Compartido' : (g.type === 'Tomi' ? '🧔🏻‍♂️ Tomi' : '👩🏽 Ara');
     var each = g.type === 'compartido' ? ' · c/u $'+fmtMoney(g.monto/2) : '';
     var d = new Date(g.ts);
     var time = d.getDate()+'/'+(d.getMonth()+1)+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
