@@ -333,7 +333,7 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
       <button class="map-type-btn" id="mbtn-playa" onclick="toggleDropdown(event,'playa')">🏖 Playas ▾</button>
       <button class="map-type-btn" id="mbtn-restaurant" onclick="toggleDropdown(event,'restaurant')">🍽 Restaurantes ▾</button>
       <button class="map-type-btn" id="mbtn-bar" onclick="toggleDropdown(event,'bar')">🍺 Barcitos ▾</button>
-      <button class="map-type-btn" id="mbtn-paseo" onclick="toggleDropdown(event,'paseo')">🚶 Paseos ▾</button>
+      <button class="map-type-btn" id="mbtn-paseo" onclick="toggleDropdown(event,'paseo')">🚶🏻 Paseos ▾</button>
       <button class="map-type-btn" id="mbtn-visitado" onclick="toggleDropdown(event,'visitado')">✅ Visitados ▾</button>
     </div>
     <div id="leaflet-map"></div>
@@ -344,7 +344,7 @@ header { padding: 18px 16px 0; display: flex; align-items: flex-start; justify-c
     <div class="gasto-form">
       <div class="gasto-form-title">Nuevo gasto</div>
       <div class="gasto-type-row">
-        <button class="gasto-type-btn active" data-gtype="compartido" onclick="setGastoType('compartido')">👫 Compartido</button>
+        <button class="gasto-type-btn active" data-gtype="compartido" onclick="setGastoType('compartido')">👩🏽‍🤝‍👨🏻 Compartido</button>
         <button class="gasto-type-btn" data-gtype="Tomi" onclick="setGastoType('Tomi')">🧔🏻‍♂️ Tomi</button>
         <button class="gasto-type-btn" data-gtype="Ara" onclick="setGastoType('Ara')">👩🏽 Ara</button>
       </div>
@@ -705,7 +705,7 @@ function renderList(tab) {
       if (!groups[g]) groups[g] = [];
       groups[g].push(pair);
     });
-    var labels = {'Los 2':'👫 Para los dos','Tomi':'🧔🏻‍♂️ Tomi','Ara':'👩🏽 Ara'};
+    var labels = {'Los 2':'👩🏽‍🤝‍👨🏻 Para los dos','Tomi':'🧔🏻‍♂️ Tomi','Ara':'👩🏽 Ara'};
     container.innerHTML = '';
     ['Los 2','Tomi','Ara'].forEach(function(grp) {
       if (!groups[grp] || !groups[grp].length) return;
@@ -955,7 +955,7 @@ function renderGastos() {
     var id = pair[0], g = pair[1];
     var cls = g.type === 'compartido' ? 'compartido' : g.type.toLowerCase();
     var tagCls = g.type === 'compartido' ? 'tag-compartido' : (g.type === 'Tomi' ? 'tag-tomi' : 'tag-ara');
-    var tagLabel = g.type === 'compartido' ? '👫 Compartido' : (g.type === 'Tomi' ? '🧔🏻‍♂️ Tomi' : '👩🏽 Ara');
+    var tagLabel = g.type === 'compartido' ? '👩🏽‍🤝‍👨🏻 Compartido' : (g.type === 'Tomi' ? '🧔🏻‍♂️ Tomi' : '👩🏽 Ara');
     var each = g.type === 'compartido' ? ' · c/u $'+fmtMoney(g.monto/2) : '';
     var d = new Date(g.ts);
     var time = d.getDate()+'/'+(d.getMonth()+1)+' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
