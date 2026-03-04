@@ -677,7 +677,7 @@ function addItem(tab) {
   var item = { text: text, checked: false, addedBy: currentUser, ts: Date.now() };
   if (tab === 'personal') item.who = currentWho;
   db.ref('lists/' + tab).push(item); if (tab === 'bahia' || tab === 'mdp') {   navigator.vibrate(100); } else if (tab === 'personal' && currentWho === 'Los 2') {   navigator.vibrate(100); }
-  inp.value = '';
+  inp.value = ''; 
 }
 
 function toggleItem(tab, id) {
