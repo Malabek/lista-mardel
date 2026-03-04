@@ -683,6 +683,8 @@ function addItem(tab) {
     navigator.vibrate(100);
   }
   inp.value = '';
+  inp.focus();
+  inp.value = '';
   inp.blur();
   setTimeout(function(){ inp.value = ''; }, 50);
 }
